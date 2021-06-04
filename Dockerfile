@@ -1,9 +1,9 @@
-FROM golang:1.15-alpine3.12 AS gobuilder-stage
+FROM golang:1.11-alpine AS build
 
-WORKDIR /usr/src/goapp
-COPY goapp.go .
-RUN CGO_ENABLE=0 GOOS=linux GOARCH=amd64 go build -o /usr/local/bin/gostart
+WORKDIR /src/
+COPY main.go go.* /src/
+RUN CGO_ENABLE=0 go build -o /bin/demo
 
-FROM scratch AS runtime-stage
-COPY --from=gobuilder-stage /usr/local/bin/gostart /usr/local/bin/gostart
-CMD ["/usr/local/bin/gostart"]
+FROM scratch
+COPY --from=build /bin/demo /bin/demo
+ENTRYPOINT ["/bin/demo"]
